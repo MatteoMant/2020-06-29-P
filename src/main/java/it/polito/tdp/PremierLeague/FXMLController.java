@@ -5,9 +5,10 @@
 package it.polito.tdp.PremierLeague;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.PremierLeague.model.Adiacenza;
 import it.polito.tdp.PremierLeague.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,7 +40,7 @@ public class FXMLController {
     private TextField txtMinuti; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbMese"
-    private ComboBox<?> cmbMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> cmbMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbM1"
     private ComboBox<?> cmbM1; // Value injected by FXMLLoader
@@ -52,12 +53,34 @@ public class FXMLController {
 
     @FXML
     void doConnessioneMassima(ActionEvent event) {
-    	
+    	txtResult.clear();
+    	List<Adiacenza> connessioniMax = this.model.getConnessioniMax();
+    	txtResult.setText("Coppie con connessione massima: \n");
+    	for (Adiacenza a : connessioniMax) {
+    		txtResult.appendText(a + "\n");
+    	}
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-    	
+    	txtResult.clear();
+    	Integer mese = cmbMese.getValue();
+    	if (mese == null) {
+    		txtResult.setText("Per favore selezionare un mese!\n");
+    		return;
+    	}
+    	try {
+    		Integer minuti = Integer.parseInt(txtMinuti.getText());
+    		
+    		this.model.creaGrafo(mese, minuti);
+    		txtResult.setText("Grafo creato!\n");
+        	txtResult.appendText("# Vertici : " + this.model.getNumVertici() +"\n");
+        	txtResult.appendText("# Archi : " + this.model.getNumArchi() +"\n");
+        	
+    	} catch (NumberFormatException e) {
+    		txtResult.setText("Per favore inserire un numero di minuti valido!\n");
+    		return;
+    	}
     }
 
     @FXML
@@ -75,11 +98,13 @@ public class FXMLController {
         assert cmbM2 != null : "fx:id=\"cmbM2\" was not injected: check your FXML file 'Scene.fxml'.";
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Scene.fxml'.";
 
+        for (int mese = 1; mese <= 12; mese++) {
+        	cmbMese.getItems().add(mese);
+        }
     }
     
     public void setModel(Model model) {
     	this.model = model;
-  
     }
     
     
